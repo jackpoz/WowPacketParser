@@ -29,12 +29,19 @@ namespace WowPacketParser.Loading
         private uint _startTickCount;
         private int _snifferId;
         private short _snifferVersion;
+        
+        public byte[] Header
+        {
+            get;
+            private set;
+        }
 
         public BinaryPacketReader(SniffType type, string fileName, Encoding encoding)
         {
             _sniffType = type;
             _reader = new BinaryReader(new FileStream(@fileName, FileMode.Open, FileAccess.Read, FileShare.Read), encoding);
             ReadHeader();
+            StoreHeader();
         }
 
         void ReadHeader()
@@ -118,6 +125,12 @@ namespace WowPacketParser.Loading
                     break;
                 }
             }
+        }
+
+        void StoreHeader()
+        {
+            var currentPosition = _reader.BaseStream.Position;
+            Header = _reader.ReadBytes((int)currentPosition);
         }
 
         static void SetBuild(uint build)
